@@ -1,4 +1,4 @@
-# Multiaudience-Organizations
+# Model to Support DOI 10.1287/orsc.2022.1579
 Model and Supporting files for the Organization Science article "When Funders Aren’t Customers: Reputation Management and Capability Underinvestment in Multiaudience Organizations"
 
 Original article is available as Open Access on Organization Science at: https://pubsonline.informs.org/doi/full/10.1287/orsc.2022.1579
