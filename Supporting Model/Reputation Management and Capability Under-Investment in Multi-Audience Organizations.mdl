@@ -1,0 +1,593 @@
+{UTF-8}
+"Expected Performance (P*)"=
+	("Capability (C)"^"Capability Building Coefficient (β)"*("eP*"*Mantissa Time Units)\
+		^(1-"Capability Building Coefficient (β)"))
+	~	Dmnl/Month
+	~		|
+
+"Performance (P)"=
+	("Capability (C)"^"Capability Building Coefficient (β)"*("Effort to performance (eP)"\
+		*Mantissa Time Units)^(1-"Capability Building Coefficient (β)"
+	))
+	~	Dmnl/Month
+	~		~	:SUPPLEMENTARY 
+	|
+
+Mantissa Time Units=
+	1
+	~	Month
+	~	The Cobb-Douglas formulation used in this model makes no restrictions on \
+		dimensional consistency, despite its regular use in economic settings. To \
+		ensure dimensional consistency with other portions of this model, this \
+		variable is introduced to resolve dimensional issues with the mantissa of \
+		the exponential in the Cobb-Douglas formulation. Note that prior \
+		compartmental models in this space (e.g. Rahmandad et. al 2018) simply \
+		omit units outright in model building to avoid this issue.
+	|
+
+Default Target=
+	"C0*"^"Capability Building Coefficient (β)"*("u*"*h0*Mantissa Time Units)^(1-"Capability Building Coefficient (β)"\
+		)
+	~	Dmnl/Month
+	~		|
+
+"Average capability life (τ)"=
+	12
+	~	Month
+	~		|
+
+"C*"=
+	(1-"u*")*Resources*"Capability investment productivity (ρ)"*"Average capability life (τ)"
+	~	Dmnl
+	~		|
+
+"C0*"=
+	(1-"u*")*h0*"Capability investment productivity (ρ)"*"Average capability life (τ)"
+	~	Dmnl
+	~		|
+
+"Capability (C)"= INTEG (
+	Capability growth-Capability erosion+SW Exogenous Capability Investment*Exogenous Capability Investment\
+		,
+		"Initial Capability (C0)")
+	~	Dmnl
+	~		|
+
+"Capability Building Coefficient (β)"=
+	0.5
+	~	Dmnl
+	~		|
+
+Capability erosion= ACTIVE INITIAL (
+	"Capability (C)"/"Average capability life (τ)",
+		"C*"/"Average capability life (τ)")
+	~	Dmnl/Month
+	~		|
+
+Capability growth=
+	"Effort to develop capability (ec)"*"Capability investment productivity (ρ)"
+	~	Dmnl/Month
+	~		|
+
+"Capability investment productivity (ρ)"=
+	0.05
+	~	Dmnl/Dmnl
+	~		|
+
+Change in Reputation=
+	("Indicated reputation (R I)"-"Recent Reputation (R)")/"Reputation adjustment time (κ)"
+	~	Dmnl/Month
+	~		|
+
+"Effort to develop capability (ec)"=
+	(1-"Performance effort fraction (u)")*Resources
+	~	Dmnl/Month
+	~		|
+
+"Effort to performance (eP)"=
+	Resources*"Performance effort fraction (u)"
+	~	Dmnl/Month
+	~		|
+
+"eP*"=
+	"u*"*Resources
+	~	Dmnl/Month
+	~		|
+
+Exogenous Capability Investment=
+	Size of Investment*PULSE(Start of Investment,Length of Investment)
+	~	Dmnl/Month
+	~		|
+
+Expected Performance ratio=
+	"Expected Performance (P*)"/"Target Performance (P^T)"
+	~	Dmnl
+	~		|
+
+"Funder Emphasis on Performance (λ)"=
+	0.5
+	~	Dmnl [0,1,0.01]
+	~		|
+
+h0=
+	1/((1-"u*")*"Capability investment productivity (ρ)"*"Average capability life (τ)"\
+		)
+	~	Dmnl/Month
+	~		|
+
+Increased Target After Step Up=
+	1.32
+	~	Dmnl/Month
+	~		|
+
+"Indicated reputation (R I)"=
+	Expected Performance ratio^"Funder Emphasis on Performance (λ)"*(OHR R)^(1-"Funder Emphasis on Performance (λ)"\
+		)
+	~	Dmnl
+	~		|
+
+"Initial Capability (C0)"=
+	1
+	~	Dmnl
+	~		|
+
+"Initial Reputation (R0)"=
+	1
+	~	Dmnl
+	~		|
+
+Length of Investment=
+	12
+	~	Month
+	~		|
+
+"Managerial response (γ)"=
+	1.5
+	~	Dmnl
+	~		|
+
+OHR=
+	"Effort to develop capability (ec)"/("Effort to performance (eP)"+"Effort to develop capability (ec)"\
+		)
+	~	Dmnl
+	~		|
+
+OHR R=
+	1-OHR+"Capability Building Coefficient (β)"
+	~	Dmnl
+	~		|
+
+"Performance effort fraction (u)"=
+	min(1,"u*"*((Expected Performance ratio)^(-1))^("Managerial response (γ)")*("Capability (C)"\
+		/"C*")^(1-"Managerial response (γ)"*(1-
+	"Capability Building Coefficient (β)")))
+	~	Dmnl
+	~		|
+
+"Recent Reputation (R)"= INTEG (
+	Change in Reputation,
+		"Initial Reputation (R0)")
+	~	Dmnl
+	~		|
+
+Reduced Target=
+	1.29
+	~	Dmnl/Month
+	~		|
+
+"Reputation adjustment time (κ)"=
+	6
+	~	Month
+	~		|
+
+Resources=
+	SW Reputation Building * (h0*"Recent Reputation (R)") + (1-SW Reputation Building)*h0
+	~	Dmnl/Month
+	~		|
+
+Size of Investment=
+	0.1
+	~	Dmnl/Month
+	~		|
+
+Start of Investment=
+	1
+	~	Month
+	~		|
+
+Step Down and Up Target=
+	IF THEN ELSE(Time>=Target Step Down Time, IF THEN ELSE( Time>=Target Step Back Up Time\
+		 , Increased Target After Step Up , Reduced Target ) , Default Target )
+	~	Dmnl/Month
+	~		|
+
+SW Exogenous Capability Investment=
+	0
+	~	Dmnl [0,1,1]
+	~		|
+
+SW Performance Target Step=
+	0
+	~	Dmnl [0,1,1]
+	~		|
+
+SW Reputation Building=
+	1
+	~	Dmnl [0,1,1]
+	~		|
+
+"Target Performance (P^T)"=
+	(SW Performance Target Step*Step Down and Up Target)+(1-SW Performance Target Step)*\
+		Default Target
+	~	Dmnl/Month
+	~		|
+
+Target Step Back Up Time=
+	24
+	~	Month
+	~		|
+
+Target Step Down Time=
+	12
+	~	Month
+	~		|
+
+"u*"=
+	(1-"Capability Building Coefficient (β)")
+	~	Dmnl
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 250
+	~	Month
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.125
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Dashboard
+$192-192-192,0,Calibri|12||0-0-0|0-0-0|0-0-0|-1--1--1|-1--1--1|96,96,90,0
+12,1,0,311,429,245,149,3,135,0,24,3,0,0,0,-1--1--1,0-0-0,|16|B|0-0-0,0,0,0,0,0,0
+Non-Profit Organization Parameters
+12,2,0,311,740,245,99,3,135,0,24,3,0,0,0,-1--1--1,0-0-0,|16|B|0-0-0,0,0,0,0,0,0
+Funder Parameters
+12,3,0,1414,198,232,101,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Capability (C)",Graph
+12,4,0,1414,405,232,101,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Recent Reputation (R)",Graph
+12,5,0,1414,612,232,101,3,188,0,0,1,0,0,0,0,0,0,0,0,0
+Performance_vs_Target
+12,6,0,1414,821,232,101,3,188,0,0,1,0,0,0,0,0,0,0,0,0
+Phase_Diagram
+12,7,0,394,125,340,36,8,135,0,24,-1,0,0,0,-1--1--1,0-0-0,|20|B|0-0-0,0,0,0,0,0,0
+Reputation Management and Capability Under-Investment in Multi-Audience Organizations
+12,8,0,269,194,65,19,3,135,0,28,0,0,2,0,-1--1--1,192-192-192,|14|B|0-0-0,0,0,0,0,0,0
+View Model
+12,9,0,133,194,65,19,3,135,0,28,0,0,1,0,-1--1--1,255-255-255,|14|B|0-0-0,0,0,0,0,0,0
+Dashboard
+12,10,0,433,316,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Managerial response (γ)",0.1,2,0.1
+12,11,0,202,316,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Capability investment productivity (ρ)",0.01,0.1,0.01
+12,12,0,199,405,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Average capability life (τ)",1,60,1
+12,13,0,433,405,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Capability Building Coefficient (β)",0,1,0.01
+12,14,0,196,495,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Initial Capability (C0)",0.001,5,0.001
+12,15,0,433,495,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Initial Reputation (R0)",0.001,5,0.001
+12,16,0,416,691,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Reputation adjustment time (κ)",1,60,1
+12,17,0,416,779,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+"Funder Emphasis on Performance (λ)",0,1,0.01
+12,18,0,884,406,252,128,3,135,0,24,3,0,0,0,-1--1--1,0-0-0,|16|B|0-0-0,0,0,0,0,0,0
+Model Dynamics - Exogenous Capability Investment
+12,19,0,885,719,254,136,3,135,0,24,3,0,0,0,-1--1--1,0-0-0,|16|B|0-0-0,0,0,0,0,0,0
+Model Dynamics - Stepping Performance Target Down then Up
+12,20,0,177,692,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+SW Reputation Building,0,1,1
+12,21,0,176,753,80,30,8,135,0,24,0,0,0,0,-1--1--1,0-0-0,|8|I|0-0-0,0,0,0,0,0,0
+Set above switch to 0 to turn off reputation building and reduce model to classic capability trap
+12,22,0,780,376,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+SW Exogenous Capability Investment,0,1,1
+12,23,0,1004,322,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Size of Investment,-1,5,0.01
+12,24,0,1004,404,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Start of Investment,0,100,1
+12,25,0,1004,487,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Length of Investment,0,36,1
+12,26,0,774,460,92,42,8,135,0,24,0,0,0,0,-1--1--1,0-0-0,|9|I|0-0-0,0,0,0,0,0,0
+Set above switch to 1 to allow for exogenous capability investment in the firm. Suggestion: Change C0 and R0 to a small number to simulate the start up problem
+12,27,0,785,626,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+SW Performance Target Step,0,1,1
+12,28,0,786,710,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Target Step Down Time,0,60,1
+12,29,0,1001,710,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Target Step Back Up Time,0,120,1
+12,30,0,789,793,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Reduced Target,0.1,2,0.01
+12,31,0,1004,793,80,20,3,124,0,0,0,0,0,0,0,0,0,0,0,0
+Increased Target After Step Up,1,3,0.01
+12,32,0,987,629,85,21,8,135,0,24,0,0,0,0,-1--1--1,0-0-0,|9|I|0-0-0,0,0,0,0,0,0
+Set this switch to 1 to allow for a step down and then back up in the Performance Target.
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Full Model
+$192-192-192,0,Calibri|12||0-0-0|0-0-0|0-0-0|-1--1--1|-1--1--1|96,96,90,0
+10,1,"Capability (C)",512,220,40,20,3,3,0,0,0,0,0,0,0,0,0,0,0,0
+12,2,48,785,221,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,3,5,2,4,0,0,22,0,0,0,-1--1--1,,1|(722,221)|
+1,4,5,1,100,0,0,22,0,0,0,-1--1--1,,1|(604,221)|
+11,5,48,663,221,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,6,Capability erosion,663,248,35,19,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,7,48,255,220,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,8,10,1,4,0,0,22,0,0,0,-1--1--1,,1|(423,220)|
+1,9,10,7,100,0,0,22,0,0,0,-1--1--1,,1|(313,220)|
+11,10,48,368,220,6,8,34,3,0,0,3,0,0,0,0,0,0,0,0,0
+10,11,Capability growth,368,201,59,11,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,12,1,5,1,0,0,0,0,128,0,-1--1--1,,1|(599,155)|
+10,13,"Average capability life (τ)",707,113,56,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,14,"Capability investment productivity (ρ)",234,302,65,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,15,"Effort to develop capability (ec)",342,438,59,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,16,"Performance effort fraction (u)",492,526,60,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,17,"Managerial response (γ)",402,630,53,20,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,18,Expected Performance ratio,881,518,56,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,19,"Target Performance (P^T)",973,461,56,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,20,"Effort to performance (eP)",606,473,56,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,21,13,5,1,0,0,0,0,128,0,-1--1--1,,1|(708,175)|
+1,22,14,10,1,0,0,0,0,128,0,-1--1--1,,1|(301,254)|
+1,23,15,10,1,0,0,0,0,128,0,-1--1--1,,1|(336,353)|
+1,24,16,15,1,0,0,0,0,128,0,-1--1--1,,1|(391,487)|
+1,25,16,20,1,0,0,0,0,128,0,-1--1--1,,1|(541,496)|
+1,26,1,16,1,0,0,0,0,128,0,-1--1--1,,1|(471,412)|
+1,27,17,16,1,0,0,0,0,128,0,-1--1--1,,1|(420,585)|
+1,28,18,16,1,0,0,0,0,128,0,-1--1--1,,1|(673,557)|
+1,29,19,18,1,0,0,0,0,128,0,-1--1--1,,1|(957,503)|
+10,30,"Performance (P)",687,394,56,20,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,31,20,30,1,0,0,0,0,128,0,-1--1--1,,1|(665,445)|
+1,32,1,30,1,0,0,0,0,128,0,-1--1--1,,1|(599,293)|
+10,33,Resources,204,677,45,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,34,"Capability Building Coefficient (β)",561,385,60,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,35,"u*",976,330,15,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,36,"C*",402,329,15,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,37,33,36,0,1,0,0,0,64,0,-1--1--1,,1|(299,509)|
+1,38,13,36,0,1,0,0,0,64,0,-1--1--1,,1|(548,224)|
+1,39,14,36,0,1,0,0,0,64,0,-1--1--1,,1|(336,317)|
+1,40,35,36,0,1,0,0,0,64,0,-1--1--1,,1|(696,329)|
+10,41,"eP*",724,504,20,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,42,36,16,0,1,0,0,0,64,0,-1--1--1,,1|(440,414)|
+1,43,36,6,0,1,0,0,0,64,1,-1--1--1,,1|(515,293)|
+1,44,35,41,0,1,0,0,0,64,0,-1--1--1,,1|(857,411)|
+10,45,"Expected Performance (P*)",813,431,56,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,46,41,45,1,0,0,0,0,128,0,-1--1--1,,1|(741,472)|
+1,47,1,45,1,0,0,0,0,128,0,-1--1--1,,1|(743,346)|
+1,48,45,18,1,0,0,0,0,128,0,-1--1--1,,1|(850,462)|
+1,49,34,45,0,1,0,0,0,64,0,-1--1--1,,1|(682,406)|
+12,50,0,1338,404,150,150,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Performance (P)",Graph
+12,51,0,1660,404,150,150,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Capability (C)",Graph
+12,52,0,1339,718,150,150,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Performance effort fraction (u)",Graph
+10,53,"Indicated reputation (R I)",758,744,64,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,54,"Funder Emphasis on Performance (λ)",901,861,56,34,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,55,OHR,960,701,23,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,56,"Effort to performance (eP)",1056,660,56,27,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+10,57,"Effort to develop capability (ec)",1072,746,63,27,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,58,56,55,1,0,0,0,0,128,0,-1--1--1,,1|(958,673)|
+1,59,57,55,1,0,0,0,0,128,0,-1--1--1,,1|(984,740)|
+1,60,18,53,1,0,0,0,0,128,0,-1--1--1,,1|(850,669)|
+1,61,54,53,1,0,0,0,0,128,0,-1--1--1,,1|(819,826)|
+10,62,OHR R,889,746,30,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,63,55,62,1,0,0,0,0,128,0,-1--1--1,,1|(927,716)|
+1,64,62,53,1,0,0,0,0,128,0,-1--1--1,,1|(834,756)|
+10,65,"Recent Reputation (R)",503,837,55,23,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+12,66,48,783,837,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,67,69,66,4,0,0,22,0,0,0,-1--1--1,,1|(713,837)|
+1,68,69,65,68,0,0,22,2,0,0,-1--1--1,|12||0-0-0,1|(599,837)|
+11,69,48,647,837,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,70,Change in Reputation,647,864,38,19,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,71,65,69,1,0,45,0,2,64,0,-1--1--1,|12||0-0-0,1|(580,774)|
+10,72,"Reputation adjustment time (κ)",721,928,50,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,73,72,70,1,0,45,0,2,192,0,-1--1--1,|12||0-0-0,1|(654,909)|
+10,74,h0,229,823,16,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,75,74,33,1,0,43,0,2,192,0,-1--1--1,|12||0-0-0,1|(196,780)|
+1,76,65,33,1,0,43,0,2,192,0,-1--1--1,|12||0-0-0,1|(306,784)|
+10,77,SW Reputation Building,252,1115,63,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,78,33,15,1,0,43,0,2,192,0,-1--1--1,|12||0-0-0,1|(214,531)|
+1,79,33,20,1,0,0,0,0,128,0,-1--1--1,,1|(359,516)|
+1,80,33,41,1,0,0,0,0,128,0,-1--1--1,,1|(561,699)|
+1,81,53,69,1,0,0,0,0,128,0,-1--1--1,,1|(701,804)|
+12,82,0,1657,718,150,150,3,188,0,0,2,0,0,0,0,0,0,0,0,0
+"Recent Reputation (R)",Graph
+1,83,13,74,0,1,0,0,0,64,0,-1--1--1,,1|(466,469)|
+1,84,14,74,0,1,0,0,0,64,0,-1--1--1,,1|(231,562)|
+1,85,35,74,0,1,0,0,0,64,0,-1--1--1,,1|(608,571)|
+10,86,"Initial Capability (C0)",453,152,61,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,87,"Initial Reputation (R0)",435,902,71,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,88,"C0*",903,306,20,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,89,35,88,0,1,0,0,0,64,0,-1--1--1,,1|(948,321)|
+1,90,74,88,0,1,0,0,0,64,0,-1--1--1,,1|(559,569)|
+1,91,14,88,0,1,0,0,0,64,0,-1--1--1,,1|(584,303)|
+10,92,h0,1092,351,25,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+10,93,"Capability Building Coefficient (β)",1049,283,64,27,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,94,34,30,1,0,0,0,0,64,0,-1--1--1,,1|(586,416)|
+10,95,"Capability Building Coefficient (β)",554,602,64,27,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,96,95,16,1,0,0,0,0,128,0,-1--1--1,,1|(527,580)|
+1,97,13,88,1,0,0,0,0,64,0,-1--1--1,,1|(845,196)|
+10,98,"u*",480,612,24,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,99,98,16,1,0,0,0,0,128,0,-1--1--1,,1|(471,581)|
+10,100,"Capability Building Coefficient (β)",952,802,64,27,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,101,100,62,1,0,0,0,0,128,0,-1--1--1,,1|(915,785)|
+1,102,93,35,1,0,0,0,0,128,0,-1--1--1,,1|(986,283)|
+1,103,86,1,1,0,0,0,0,128,1,-1--1--1,,1|(495,186)|
+1,104,87,65,1,0,0,0,0,128,1,-1--1--1,,1|(470,886)|
+12,105,0,385,45,342,31,8,135,0,24,-1,0,0,0,-1--1--1,0-0-0,|20|B|0-0-0,0,0,0,0,0,0
+Reputation Management and Capability Under-Investment in Multi-Audience Organizations
+12,106,0,264,111,65,19,3,135,0,28,0,0,2,0,-1--1--1,255-255-255,|14|B|0-0-0,0,0,0,0,0,0
+View Model
+12,107,0,128,111,65,19,3,135,0,28,0,0,1,0,-1--1--1,192-192-192,|14|B|0-0-0,0,0,0,0,0,0
+Dashboard
+10,108,Exogenous Capability Investment,500,1266,50,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,109,Start of Investment,754,1210,50,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,110,Length of Investment,750,1267,50,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,111,Size of Investment,748,1337,50,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,112,109,108,1,0,0,0,0,128,0,-1--1--1,,1|(600,1215)|
+1,113,110,108,1,0,0,0,0,128,0,-1--1--1,,1|(631,1266)|
+1,114,111,108,1,0,0,0,0,128,0,-1--1--1,,1|(576,1318)|
+1,115,108,1,0,1,0,0,0,64,0,-1--1--1,,1|(505,746)|
+10,116,Target Step Down Time,1305,1237,49,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,117,Target Step Back Up Time,1436,1244,57,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,118,Reduced Target,1300,1370,65,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,119,Increased Target After Step Up,1458,1314,52,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,120,SW Exogenous Capability Investment,674,1120,62,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,121,SW Performance Target Step,1292,1117,56,27,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,122,120,1,0,1,0,0,0,64,0,-1--1--1,,1|(593,673)|
+10,123,Default Target,937,389,60,13,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,124,88,123,1,0,0,0,0,64,0,-1--1--1,,1|(905,342)|
+1,125,35,123,1,0,0,0,0,64,0,-1--1--1,,1|(956,343)|
+1,126,92,123,1,0,0,0,0,128,0,-1--1--1,,1|(1034,377)|
+1,127,93,123,1,0,0,0,0,128,0,-1--1--1,,1|(994,370)|
+1,128,123,19,1,0,0,0,0,128,0,-1--1--1,,1|(978,424)|
+10,129,Time,1119,1369,33,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,130,121,19,0,1,0,0,0,64,0,-1--1--1,,1|(1135,795)|
+10,131,Step Down and Up Target,1114,1296,64,20,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,132,116,131,1,0,0,0,0,128,0,-1--1--1,,1|(1148,1250)|
+1,133,117,131,1,0,0,0,0,128,0,-1--1--1,,1|(1263,1297)|
+1,134,118,131,1,0,0,0,0,128,0,-1--1--1,,1|(1165,1359)|
+1,135,119,131,1,0,0,0,0,128,0,-1--1--1,,1|(1265,1339)|
+1,136,129,131,1,0,0,0,0,128,0,-1--1--1,,1|(1108,1340)|
+10,137,Default Target,1199,1171,38,20,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,138,137,131,1,0,0,0,0,128,0,-1--1--1,,1|(1091,1203)|
+1,139,131,19,0,1,0,0,0,64,0,-1--1--1,,1|(1045,888)|
+1,140,77,33,0,1,0,0,0,64,0,-1--1--1,,1|(228,899)|
+10,141,Mantissa Time Units,687,433,55,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,142,141,30,0,1,0,0,0,64,0,-1--1--1,,1|(687,414)|
+10,143,Mantissa Time Units,813,477,55,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,144,143,45,0,1,0,0,0,64,0,-1--1--1,,1|(813,465)|
+10,145,Mantissa Time Units,937,421,55,19,8,2,1,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128,0,0,0,0,0,0
+1,146,145,123,0,1,0,0,0,64,0,-1--1--1,,1|(937,402)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 3
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-0|-1--1--1|255-255-255|96,96,90,0
+///---\\\
+:GRAPH Phase_Diagram
+:TITLE Stock Evolution Path
+:WIP
+:X-AXIS "Recent Reputation (R)"
+:X-MIN 0
+:X-MAX 1.5
+:SCALE
+:VAR "Capability (C)"
+:Y-MIN 0
+:Y-MAX 1.5
+:DATASET *
+:VAR "Capability (C)"
+:DATASET *2
+:VAR "Capability (C)"
+:DATASET *3
+:VAR "Capability (C)"
+:DATASET *4
+:VAR "Capability (C)"
+:DATASET *5
+:VAR "Capability (C)"
+:DATASET *6
+
+:GRAPH Performance_vs_Target
+:TITLE Performance vs Target
+:SCALE
+:VAR "Performance (P)"
+:VAR "Target Performance (P^T)"
+:L<%^E!@
+4:Time
+5:Mantissa Time Units
+9:Baseline
+19:90,0
+24:0
+25:250
+26:250
+57:1
+54:0
+55:0
+82:0
+86:0
+59:0
+56:0
+58:0
+71:0
+44:1252
+46:0
+45:3
+49:0
+50:0
+51:
+52:
+53:
+43:OptScript
+47:OptScript
+48:
+60:PhasePlot_1_2_5_large.tab
+61:65001
+62:1
+63:1
+64:0
+65:1
+66:0
+67:0
+68:0
+69:0
+70:1
+11:Opt Test2 Full Model with Reputation Building - Static Goal.voc
+12:Opt1.vpd
+23:0
+18:Full Model with Reputation Building - Static Goal.vsc
+20:Full Model with Reputation Building - Static Goal.lst
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:1
+72:0
+73:0
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+95:0
+96:0
+97:0
+77:1
+78:0
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:OptScript
